@@ -13,7 +13,7 @@
     &__img {
         width: 180px;
         height: 180px;
-        object-fit: cover;
+        object-fit: contain;
     }
     &__info {
         display: grid;
@@ -30,6 +30,12 @@
     &__descr {
         font-size: 14px;
         line-height: 18px;
+
+        display: -webkit-box;
+        overflow: hidden;
+
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
     }
     &__btns {
         a:nth-child(1) {
