@@ -7,15 +7,14 @@ import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
-
     state = {
         char: {},
         loading: true,
         error: false,
+    }
+
+    componentDidMount() {
+        this.updateChar();
     }
 
     marvelService = new MarvelService();
@@ -35,12 +34,15 @@ class RandomChar extends Component {
     }
 
     updateChar = () => {
+        this.setState({loading: !this.state.loading});
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
 
         this.marvelService
             .getCharacter(id)
             .then(this.onCharLoaded)
             .catch(this.onError);
+        
+        this.setState({loading: !this.state.loading});
     }
 
     render() {
@@ -63,7 +65,7 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button onClick={this.updateChar} className="button button__main">
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -76,9 +78,11 @@ class RandomChar extends Component {
 const View = ({char}) => {
     const {name, thumbnail, description, homepage, wiki} = char;
 
+    const imgStyle = thumbnail ? 'objectFit: "cover"' : 'objectFit: "contain"';
+
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} style={{imgStyle}} alt="Random character" className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
