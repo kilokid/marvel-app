@@ -22,8 +22,14 @@ class RandomChar extends Component {
     onCharLoaded = (char) => {
         this.setState({
             char,
-            loading: false
+            loading: false,
         });
+    }
+
+    onCharLoading = () => {
+        this.setState({
+            loading: true
+        })
     }
 
     onError = () => {
@@ -34,22 +40,19 @@ class RandomChar extends Component {
     }
 
     updateChar = () => {
-        this.setState({loading: !this.state.loading});
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-
+        this.onCharLoading();
         this.marvelService
             .getCharacter(id)
             .then(this.onCharLoaded)
             .catch(this.onError);
-        
-        this.setState({loading: !this.state.loading});
     }
 
     render() {
         const {char, loading, error} = this.state;
 
-        const errorMessage = error ? <ErrorMessage /> : null;
-        const spinner = loading ? <Spinner /> : null;
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading ? <Spinner/> : null;
         const content = !(loading || error) ? <View char={char}/> : null;
 
         return (
@@ -78,11 +81,12 @@ class RandomChar extends Component {
 const View = ({char}) => {
     const {name, thumbnail, description, homepage, wiki} = char;
 
-    const imgStyle = thumbnail ? 'objectFit: "cover"' : 'objectFit: "contain"';
+    const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ?
+    {objectFit: "contain"} : {objectFit: "cover"};
 
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} style={{imgStyle}} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} style={imgStyle} alt="Random character" className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
