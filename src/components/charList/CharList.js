@@ -4,12 +4,11 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
 
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
 
 class CharList extends Component {
     state = {
         chars: [],
-        loading: false,
+        loading: true,
         error: false,
     };
 
@@ -27,27 +26,43 @@ class CharList extends Component {
         })
     }
 
-    updateChars = () => {
-        this.setState({loading: !this.state.loading});
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true,
+        });
+    }
 
+    onLoading = () => {
+        this.setState({
+            loading: true,
+            error: false,
+        });
+    }
+
+    updateChars = () => {
+        this.onLoading();
         this.marvelService
             .getAllCharacters()
             .then(this.onCharsLoaded)
             .catch(this.onError);
-        
-        this.setState({
-            loading: !this.state.loading,
-            error: !this.state.error,
-        });
     }
     
     render() {
-        const chars = this.state.chars.map((char, i) => <View key={i} char={char}/>);
+        const {loading, error} = this.state;
+
+        const chars = this.state.chars.map((char) => <View key={char.id} onSelectedChar={this.props.onSelectedChar} char={char}/>);
+
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? chars : null;
 
         return (
             <div className="char__list">
+                {errorMessage}
+                {spinner}
                 <ul className="char__grid">
-                    {chars}
+                    {content}
                 </ul>
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
@@ -57,15 +72,14 @@ class CharList extends Component {
     }
 }
 
-const View = (char) => {
-    console.log(char);
-    const {name, thumbnail} = char.char;
+const View = (props) => {
+    const {id, name, thumbnail} = props.char;
 
     const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ?
-    {objectFit: "contain", height: "auto"} : {objectFit: "cover"};
+    {objectFit: "unset"} : {objectFit: "cover"};
 
     return (
-        <li className="char__item char__item_selected">
+        <li onClick={() => props.onSelectedChar(id)} className="char__item char__item_selected">
             <img src={thumbnail} alt={name} style={imgStyle}/>
             <div className="char__name">{name}</div>
         </li>
