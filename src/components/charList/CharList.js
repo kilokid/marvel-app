@@ -10,52 +10,65 @@ class CharList extends Component {
         chars: [],
         loading: true,
         error: false,
+        loadingChars: false,
+        offset: 210,
+        charsEnd: false,
     };
 
     componentDidMount() {
-        this.updateChars();
+        this.onRequest();
     }
 
     marvelService = new MarvelService();
 
-    onCharsLoaded = (chars) => {
-        this.setState({
-            chars,            
+    onCharsLoaded = (newChars) => {
+        let ended = false;
+        if (newChars.length < 9) {
+            ended = true;
+        }
+
+        this.setState(({chars, offset}) => ({
+            chars: [...chars, ...newChars],            
             loading: false,
             error: false,
-        })
+            loadingChars: false,
+            offset: offset + 9,
+            charsEnd: ended,
+        }))
     }
 
     onError = () => {
         this.setState({
             loading: false,
             error: true,
+            loadingChars: false,
         });
     }
 
-    onLoading = () => {
+    onLoadingChars= () => {
         this.setState({
-            loading: true,
+            loadingChars: true,
             error: false,
-        });
+        })
     }
 
-    updateChars = () => {
-        this.onLoading();
+    onRequest = (offset) => {
+        this.onLoadingChars();
+
         this.marvelService
-            .getAllCharacters()
+            .getAllCharacters(offset)
             .then(this.onCharsLoaded)
             .catch(this.onError);
     }
     
     render() {
-        const {loading, error} = this.state;
-
-        const chars = this.state.chars.map((char) => <View key={char.id} onSelectedChar={this.props.onSelectedChar} char={char}/>);
-
+        const {chars, loading, error, offset, loadingChars, charsEnd} = this.state;
+        
+        const viewChars = chars.map((char) => <View key={char.id} onSelectedChar={this.props.onSelectedChar} char={char}/>);
+        
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? chars : null;
+        const content = !(loading || error) ? viewChars : null;
 
         return (
             <div className="char__list">
@@ -64,7 +77,12 @@ class CharList extends Component {
                 <ul className="char__grid">
                     {content}
                 </ul>
-                <button className="button button__main button__long">
+                <button 
+                    className="button button__main button__long"
+                    disabled={loadingChars}
+                    style={{'display': charsEnd ? 'none' : 'block'}}
+                    onClick={() => this.onRequest(offset)}
+                >
                     <div className="inner">load more</div>
                 </button>
             </div>
