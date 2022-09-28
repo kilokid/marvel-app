@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import Spinner from '../spinner/Spinner';
@@ -62,11 +62,30 @@ class CharList extends Component {
             .then(this.onCharsLoaded)
             .catch(this.onError);
     }
+
+    itemRefs = [];
+
+    setRef = (ref) => {
+        this.itemRefs.push(ref);
+    }
+
+    onFocusItem = (id) => {
+        this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
+        this.itemRefs[id].classList.add('char__item_selected');
+        this.itemRefs[id].focus();
+    }
     
     render() {
         const {chars, loading, error, offset, loadingChars, charsEnd} = this.state;
         
-        const viewChars = chars.map((char) => <View key={char.id} onSelectedChar={this.props.onSelectedChar} char={char}/>);
+        const viewChars = chars.map((char, i) => <View 
+            key={char.id} 
+            onSelectedChar={this.props.onSelectedChar} 
+            char={char}
+            onFocusItem={this.onFocusItem}
+            setRef={this.setRef}
+            index={i}
+        />);
         
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
@@ -92,19 +111,36 @@ class CharList extends Component {
     }
 }
 
-const View = (props) => {
-    const {id, name, thumbnail} = props.char;
-
-    const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ?
-    {objectFit: "unset"} : {objectFit: "cover"};
-
-    return (
-        <li onClick={() => props.onSelectedChar(id)} className="char__item char__item_selected">
-            <img src={thumbnail} alt={name} style={imgStyle}/>
-            <div className="char__name">{name}</div>
-        </li>
-    );
-}
+class View extends Component {
+    render() {
+        const {id, name, thumbnail} = this.props.char;
+        const index = this.props.index;
+    
+        const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ?
+        {objectFit: "unset"} : {objectFit: "cover"};
+    
+        return (
+            <li 
+                tabIndex='0'
+                ref={this.props.setRef}
+                onClick={() => {
+                    this.props.onSelectedChar(id);
+                    this.props.onFocusItem(index);
+                }}
+                onKeyPress={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        this.props.onSelectedChar(id);
+                        this.props.onFocusItem(index);
+                    }
+                }}
+                className="char__item"
+            >
+                <img src={thumbnail} alt={name} style={imgStyle}/>
+                <div className="char__name">{name}</div>
+            </li>
+        );
+    }
+    }
 
 CharList.propTypes = {
     onSelectedChar: PropTypes.func.isRequired,
