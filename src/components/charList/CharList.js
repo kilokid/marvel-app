@@ -58,7 +58,7 @@ const CharList = (props) => {
     const itemRefs = useRef([]);
 
     const onFocusItem = (id) => {
-        itemRefs.current[id].forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
         itemRefs.current[id].focus();
     }
@@ -68,6 +68,7 @@ const CharList = (props) => {
         onSelectedChar={props.onSelectedChar} 
         char={char}
         onFocusItem={onFocusItem}
+        itemRefs={itemRefs}
         index={i}
     />);
     
@@ -104,7 +105,7 @@ const View = (props) => {
     return (
         <li 
             tabIndex='0'
-            // ref={props.setRef}
+            ref={el => props.itemRefs.current[index] = el}
             onClick={() => {
                 props.onSelectedChar(id);
                 props.onFocusItem(index);
