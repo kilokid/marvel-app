@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import AppHeader from "../appHeader/AppHeader";
+import AppBanner from "../appBanner/AppBanner";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
@@ -20,6 +21,7 @@ const App = () => {
         <div className="app">
             <AppHeader/>
             <main>
+                <AppBanner />
                 <ErrorBoundary>
                     <ComicsList />
                 </ErrorBoundary>

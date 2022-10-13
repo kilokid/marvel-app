@@ -47,7 +47,7 @@ const ComicsList = () => {
                 <a href="#">
                     <img src={thumbnail} alt={title} className="comics__item-img"/>
                     <div className="comics__item-name">{title}</div>
-                    <div className="comics__item-price">{price}$</div>
+                    <div className="comics__item-price">{price}</div>
                 </a>
             </li>
         )
@@ -63,7 +63,12 @@ const ComicsList = () => {
             <ul className="comics__grid">
                 {items}
             </ul>
-            <button className="button button__main button__long">
+            <button 
+                className="button button__main button__long"
+                onClick={() => onRequest(offset, false)}
+                disabled={loadingComics}
+                style={{'display': charsEnd ? 'none' : 'block'}}
+            >
                 <div className="inner">load more</div>
             </button>
         </div>
