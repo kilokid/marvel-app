@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 
@@ -13,7 +14,7 @@ const ComicsList = () => {
     const [offset, setOffset] = useState(20);
     const [charsEnd, setComicsEnd] = useState(false);
 
-    const {loading, error, clearError, getComics} = useMarvelService();
+    const {loading, error, clearError, getAllComics} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -35,7 +36,7 @@ const ComicsList = () => {
         initial ? setloadingComics(false) : setloadingComics(true);
 
         clearError();
-        getComics(offset)
+        getAllComics(offset)
             .then(loadedComics);
     }
 
@@ -43,12 +44,12 @@ const ComicsList = () => {
         const {thumbnail, title, price, id} = comic;
 
         return (
-            <li className="comics__item" key={id}>
-                <a href="#">
+            <li className="comics__item" key={i}>
+                <Link to={`/comics/${id}`}>
                     <img src={thumbnail} alt={title} className="comics__item-img"/>
                     <div className="comics__item-name">{title}</div>
                     <div className="comics__item-price">{price}</div>
-                </a>
+                </Link>
             </li>
         )
     });
