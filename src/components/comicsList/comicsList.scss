@@ -29,6 +29,19 @@
             color: rgba(0, 0, 0, 0.6);
             text-transform: uppercase;
         }
+        &-enter {
+            transform: scale(0);
+        }
+        &-active {
+            transform: scale(0);
+            transition: transform 300;
+        }
+        &-enter-done {
+            transform: scale(1);
+        }
+        &-exit {
+            transform: scale(0);
+        }
         &:hover {
             transform: translateY(-5px);
         }

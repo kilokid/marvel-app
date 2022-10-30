@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import useMarvelService from '../../services/MarvelService';
 
@@ -44,13 +45,15 @@ const ComicsList = () => {
         const {thumbnail, title, price, id} = comic;
 
         return (
-            <li className="comics__item" key={i}>
-                <Link to={`/comics/${id}`}>
-                    <img src={thumbnail} alt={title} className="comics__item-img"/>
-                    <div className="comics__item-name">{title}</div>
-                    <div className="comics__item-price">{price}</div>
-                </Link>
-            </li>
+            <CSSTransition key={id} timeout={300} classNames="comics__item">
+                <li className="comics__item" key={i}>
+                    <Link to={`/comics/${id}`}>
+                        <img src={thumbnail} alt={title} className="comics__item-img"/>
+                        <div className="comics__item-name">{title}</div>
+                        <div className="comics__item-price">{price}</div>
+                    </Link>
+                </li>
+            </CSSTransition>
         )
     });
 
@@ -61,9 +64,11 @@ const ComicsList = () => {
         <div className="comics__list">
             {errorMessage}
             {spinner}
-            <ul className="comics__grid">
-                {items}
-            </ul>
+                <ul className="comics__grid">
+                    <TransitionGroup component={null}>
+                        {items}
+                    </TransitionGroup>
+                </ul>   
             <button 
                 className="button button__main button__long"
                 onClick={() => onRequest(offset, false)}
