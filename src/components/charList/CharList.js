@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -34,6 +35,7 @@ const CharList = (props) => {
     const onRequest = (offset, initial) => {
         initial ? setLoadingChars(false) : setLoadingChars(true);
 
+        clearError();
         getAllCharacters(offset)
             .then(onCharsLoaded);
     }
@@ -46,14 +48,20 @@ const CharList = (props) => {
         itemRefs.current[id].focus();
     }
 
-    const viewChars = chars.map((char, i) => <View 
-        key={char.id} 
-        onSelectedChar={props.onSelectedChar} 
-        char={char}
-        onFocusItem={onFocusItem}
-        itemRefs={itemRefs}
-        index={i}
-    />);
+    const viewChars = chars.map((char, i) => {
+        return(
+        <CSSTransition key={char.id} timeout={300} classNames='char__item'>
+                <View
+                    key={char.id} 
+                    onSelectedChar={props.onSelectedChar} 
+                    char={char}
+                    onFocusItem={onFocusItem}
+                    itemRefs={itemRefs}
+                    index={i}
+                />
+            </CSSTransition>
+        )
+    });
     
     const errorMessage = error ? <ErrorMessage/> : null;
     const spinner = loading && !loadingChars ? <Spinner/> : null;
@@ -63,7 +71,9 @@ const CharList = (props) => {
             {errorMessage}
             {spinner}
             <ul className="char__grid">
-                {viewChars}
+                <TransitionGroup component={null}>
+                    {viewChars}
+                </TransitionGroup>
             </ul>
             <button 
                 className="button button__main button__long"
