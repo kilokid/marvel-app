@@ -25,10 +25,10 @@ const MainPage = () => {
                     <CharList onSelectedChar={onSelectedChar} />
                 </ErrorBoundary>
                 <ErrorBoundary>
-                    <CharInfo charId={selectedChar}/>
-                </ErrorBoundary>
-                <ErrorBoundary>
-                    <SearchPanel />
+                    <div className="char__content-aside">
+                        <CharInfo charId={selectedChar}/>
+                        <SearchPanel />
+                    </div>
                 </ErrorBoundary>
             </div>
             <img className="bg-decoration" src={decoration} alt="vision"/>
