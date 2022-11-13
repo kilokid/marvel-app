@@ -22,3 +22,4 @@
 - Code Splitting
 - React Transition Group (анимация)
 - Formik, Yup (Формы, валидация)
+- React-helmet (SEO)
