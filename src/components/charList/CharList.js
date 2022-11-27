@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -43,6 +43,7 @@ const CharList = (props) => {
 
     useEffect(() => {
         onRequest(offset, true);
+        // eslint-disable-next-line
     }, []);
 
     const {clearError, getAllCharacters, process, setProcess} = useMarvelService();
@@ -91,9 +92,14 @@ const CharList = (props) => {
         )
     });
 
+    const elements = useMemo(() => {
+        return setContent(process, viewChars, loadingChars);
+        // eslint-disable-next-line
+    }, [process]);
+
     return (
         <div className="char__list">
-            {setContent(process, viewChars, loadingChars)}
+            {elements}
             <button 
                 className="button button__main button__long"
                 disabled={loadingChars}

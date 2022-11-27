@@ -16,6 +16,7 @@ const SingleCharacterPage = () => {
 
     useEffect(() => {
         updateChar();
+        // eslint-disable-next-line
     }, [characterId]);
 
     const onCharLoading = (char) => {
