@@ -29,13 +29,13 @@ const SearchPanel = () => {
 
         setChar(char);
         setLoadedChar(true);
+        setProcess('confirmed');
     }
     
     const onRequest = (name) => {
         clearError();
         getCharacterName(name)
-            .then(onCharLoaded)
-            .then(() => setProcess('confirmed'));
+            .then(onCharLoaded);
     }
 
     return (
@@ -65,7 +65,7 @@ const SearchPanel = () => {
                             <div className="inner">Find</div>
                         </button>
                         {errors.char && touched.char && !loadedChar && process !== 'error' ? (
-                        <p className='char__form-error'>{errors.char}</p>
+                            <p className='char__form-error'>{errors.char}</p>
                         ) : null}
                         {process === 'error' && !loadedChar ? (
                             <p className='char__form-error'>The character was not found. Check the name and try again</p>

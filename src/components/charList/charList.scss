@@ -26,10 +26,12 @@
         padding: 15px;
         cursor: pointer;
         transition: 0.3s transform;
+        border-radius: 20px;
         img {
             width: 200px;
             height: 200px;
             object-fit: cover;
+            border-radius: 20px 20px 0 0;
             transform: translate(-15px, -15px);
         }
         &_selected {

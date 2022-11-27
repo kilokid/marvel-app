@@ -10,10 +10,12 @@
     }
     &__item {
         transition: 0.3s transform;
+        border-radius: 20px;
         &-img {
             box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.25);
             width: 225px;
             height: 345px;
+            border-radius: 20px;
         }
         &-name {
             margin-top: 10px;

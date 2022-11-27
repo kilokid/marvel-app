@@ -23,6 +23,7 @@ const useMarvelService = () => {
         const res = await request(`${_apibase}characters?name=${name}&${_apiKey}`);
         
         if (!res.data.results[0]) {
+            setProcess('error');
             return;
         }
         
