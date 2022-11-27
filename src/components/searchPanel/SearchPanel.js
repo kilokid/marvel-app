@@ -15,7 +15,7 @@ const SearchPanel = () => {
     const [char, setChar] = useState({});
     const [loadedChar, setLoadedChar] = useState(false);
 
-    const {loading, error, clearError, getCharacterName} = useMarvelService();
+    const {clearError, getCharacterName, process, setProcess} = useMarvelService();
 
     const submitForm = (name) => {
         onRequest(name);
@@ -34,7 +34,8 @@ const SearchPanel = () => {
     const onRequest = (name) => {
         clearError();
         getCharacterName(name)
-            .then(onCharLoaded);
+            .then(onCharLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     return (
@@ -60,16 +61,16 @@ const SearchPanel = () => {
                             name="char"
                             type="text"
                         />
-                        <button disabled={loading} className="button button__main" type="submit">
+                        <button disabled={process === 'loading'} className="button button__main" type="submit">
                             <div className="inner">Find</div>
                         </button>
-                        {errors.char && touched.char && !loadedChar && !error ? (
-                            <p className='char__form-error'>{errors.char}</p>
+                        {errors.char && touched.char && !loadedChar && process !== 'error' ? (
+                        <p className='char__form-error'>{errors.char}</p>
                         ) : null}
-                        {error && !loadedChar ? (
+                        {process === 'error' && !loadedChar ? (
                             <p className='char__form-error'>The character was not found. Check the name and try again</p>
                         ) : null}
-                        {loadedChar && !error ? (
+                        {loadedChar && process !== 'error' ? (
                             <div className='char__form-success'>
                                 <p className='char__form-success-text'>{`There is! Visit ${char.name} page?`}</p>
                                 <Link to={`/characters/${char.id}`} className='button button__secondary'>

@@ -8,6 +8,33 @@ import useMarvelService from '../../services/MarvelService';
 
 import './charList.scss';
 
+const setContent = (process, Component, loadingNewChars) => {
+    switch(process) {
+        case 'waiting':
+            return <Spinner />;
+        case 'loading':
+            return loadingNewChars ? (
+                <ul className="char__grid">
+                    <TransitionGroup component={null}>
+                        {Component}
+                    </TransitionGroup>
+                </ul>
+            ) : <Spinner/>;
+        case 'error':
+            return <ErrorMessage/>;
+        case 'confirmed':
+            return (
+                <ul className="char__grid">
+                    <TransitionGroup component={null}>
+                        {Component}
+                    </TransitionGroup>
+                </ul>
+            );
+        default:
+            throw new Error('unexpected process state');
+    }
+}
+
 const CharList = (props) => {
     const [chars, setChars] = useState([]);
     const [loadingChars, setLoadingChars] = useState(false);
@@ -18,7 +45,7 @@ const CharList = (props) => {
         onRequest(offset, true);
     }, []);
 
-    const {loading, error, clearError, getAllCharacters} = useMarvelService();
+    const {clearError, getAllCharacters, process, setProcess} = useMarvelService();
 
     const onCharsLoaded = (newChars) => {
         let ended = false;
@@ -37,7 +64,8 @@ const CharList = (props) => {
 
         clearError();
         getAllCharacters(offset)
-            .then(onCharsLoaded);
+            .then(onCharsLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const itemRefs = useRef([]);
@@ -50,7 +78,7 @@ const CharList = (props) => {
 
     const viewChars = chars.map((char, i) => {
         return(
-        <CSSTransition key={char.id} timeout={300} classNames='char__item'>
+            <CSSTransition key={char.id} timeout={300} classNames='char__item'>
                 <View
                     key={char.id} 
                     onSelectedChar={props.onSelectedChar} 
@@ -62,19 +90,10 @@ const CharList = (props) => {
             </CSSTransition>
         )
     });
-    
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !loadingChars ? <Spinner/> : null;
 
     return (
         <div className="char__list">
-            {errorMessage}
-            {spinner}
-            <ul className="char__grid">
-                <TransitionGroup component={null}>
-                    {viewChars}
-                </TransitionGroup>
-            </ul>
+            {setContent(process, viewChars, loadingChars)}
             <button 
                 className="button button__main button__long"
                 disabled={loadingChars}

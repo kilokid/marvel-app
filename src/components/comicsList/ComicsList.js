@@ -9,13 +9,40 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
 
+const setContent = (process, Component, loadingNewComics) => {
+    switch(process) {
+        case 'waiting':
+            return <Spinner />;
+        case 'loading':
+            return loadingNewComics ? (
+                <ul className="comics__grid">
+                    <TransitionGroup component={null}>
+                        {Component}
+                    </TransitionGroup>
+                </ul>
+            ) : <Spinner/>;
+        case 'error':
+            return <ErrorMessage/>;
+        case 'confirmed':
+            return (
+                <ul className="comics__grid">
+                    <TransitionGroup component={null}>
+                        {Component}
+                    </TransitionGroup>
+                </ul>
+            );
+        default:
+            throw new Error('unexpected process state');
+    }
+}
+
 const ComicsList = () => {
     const [comics, setComics] = useState([]);
     const [loadingComics, setloadingComics] = useState(false);
     const [offset, setOffset] = useState(20);
     const [charsEnd, setComicsEnd] = useState(false);
 
-    const {loading, error, clearError, getAllComics} = useMarvelService();
+    const {clearError, getAllComics, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -38,7 +65,8 @@ const ComicsList = () => {
 
         clearError();
         getAllComics(offset)
-            .then(loadedComics);
+            .then(loadedComics)
+            .then(() => setProcess('confirmed'));
     }
 
     const items = comics.map((comic, i) => {
@@ -57,18 +85,9 @@ const ComicsList = () => {
         )
     });
 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !loadingComics ? <Spinner/> : null;
-
     return (
         <div className="comics__list">
-            {errorMessage}
-            {spinner}
-                <ul className="comics__grid">
-                    <TransitionGroup component={null}>
-                        {items}
-                    </TransitionGroup>
-                </ul>   
+            {setContent(process, items, loadingComics)}
             <button 
                 className="button button__main button__long"
                 onClick={() => onRequest(offset, false)}
